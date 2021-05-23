@@ -8,7 +8,6 @@ else:
 
 random.seed(seed)
 
-global doesntunlock, percents
 percents = [
     "mawlek",
     "gruz",
@@ -835,8 +834,8 @@ for item in newnames.items():
             print(item[1][1])
 
 
-def rando():
-    global percents, newnames
+def rando(percents):
+    global newnames
     a = main(percents)
     newa = []
     for i in range(len(a)):
@@ -863,8 +862,8 @@ def addsplitnames(splitfile, splits):
         splitfile.write("\n<Split>" + item[1] + "</Split>")
 
 
-def makeLSS():
-    splits = rando()
+def makeLSS(percents):
+    splits = rando(percents)
     # print(splits)
     # print('Randomization Complete. Constructing Split File Now (seed '+str(seed)+')')
     splitfile = open("1xxRandomizedSplits" + str(seed) + ".lss", "w")
@@ -884,4 +883,4 @@ def makeLSS():
     splitfile.write("\n</Run>")
 
 
-makeLSS()
+makeLSS(percents)
