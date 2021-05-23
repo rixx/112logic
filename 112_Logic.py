@@ -826,23 +826,63 @@ def rando(percents):
     return newa
 
 
-def addsplit(splitfile, splitname, spliticon):
-    splitfile.write("\n<Segment>")
-    splitfile.write("\n<Name>" + splitname + "</Name>")
-    splitfile.write("\n<Icon><![CDATA[AAEAAAD/////" + spliticon + "]]></Icon>")
-    splitfile.write('\n<SplitTimes>\n<SplitTime name="Personal Best" />\n</SplitTimes>')
-    splitfile.write("\n<BestSegmentTime /> \n<SegmentHistory />")
-    splitfile.write("\n</Segment>")
+def xml(name, content, attributes=None, indent=0, self_closing=False, oneline=False):
+    indent = " " * indent
+    tag = indent
+    attr = ""
+    if attributes:
+        attr = " " + " ".join(
+            '{key}="{value}"'.format(key=key, value=value)
+            for key, value in attributes.items()
+        )
+    tag += "<{name}{attr}".format(name=name, attr=attr)
+    if not content and self_closing:
+        return "{tag} />".format(tag=tag)
+    if oneline:
+        return "{tag}>{content}</{name}>".format(tag=tag, content=content, name=name)
+    if content:
+        tag = "{tag}>\n{content}".format(tag=tag, content=content)
+    else:
+        tag = "{tag}>".format(tag=tag)
+    return "{tag}\n{indent}</{name}>".format(
+        tag=tag, content=content, indent=indent, name=name
+    )
 
 
-def addallsplits(splitfile, splits):
-    for item in splits:
-        addsplit(splitfile, item[0], item[2])
+def getsplitnames(splits):
+    return "\n".join([xml("Split", item[1], oneline=True) for item in splits])
 
 
-def addsplitnames(splitfile, splits):
-    for item in splits:
-        splitfile.write("\n<Split>" + item[1] + "</Split>")
+def getallsegments(splits):
+    return "\n".join(
+        [
+            xml(
+                "Segment",
+                "\n".join(
+                    [
+                        xml("Name", item[0], oneline=True),
+                        xml(
+                            "Icon",
+                            "<![CDATA[AAEAAAD/////" + item[2] + "]]>",
+                            oneline=True,
+                        ),
+                        xml(
+                            "SplitTimes",
+                            xml(
+                                "SplitTime",
+                                None,
+                                attributes={"name": "Personal Best"},
+                                self_closing=True,
+                            ),
+                        ),
+                        xml("BestSegmentTime", None, self_closing=True),
+                        xml("SegmentHistory", None, self_closing=True),
+                    ]
+                ),
+            )
+            for item in splits
+        ]
+    )
 
 
 def makeLSS(percents):
@@ -852,18 +892,62 @@ def makeLSS(percents):
     splitfile = open("1xxRandomizedSplits" + str(seed) + ".lss", "w")
     splitfile.truncate(0)
     splitfile.write(
-        '<?xml version="1.0" encoding="UTF-8"?>\n<Run version="1.7.0">\n  <GameIcon />\n  <GameName>Hollow Knight</GameName>\n  <CategoryName>112% - but random split order!!!</CategoryName>\n\n  <Metadata>\n    <Run id="" />\n    <Platform usesEmulator="False">\n    </Platform>\n    <Region>\n    </Region>\n    <Variables />\n  </Metadata>\n  <Offset>00:00:00</Offset>\n  <AttemptCount>0</AttemptCount>\n  <AttemptHistory />\n  <Segments>'
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        + xml(
+            "Run",
+            attributes={"version": "1.7.0"},
+            content="\n".join(
+                [
+                    xml("GameIcon", None, indent=2, self_closing=True),
+                    xml("GameName", "Hollow Knight", indent=2, oneline=True),
+                    xml(
+                        "CategoryName",
+                        "112% - but random split order!!!",
+                        indent=2,
+                        oneline=True,
+                    ),
+                    "",
+                    xml(
+                        "Metadata",
+                        "\n".join(
+                            [
+                                xml(
+                                    "Run",
+                                    None,
+                                    attributes={"id": ""},
+                                    self_closing=True,
+                                    indent=4,
+                                ),
+                                xml(
+                                    "Platform",
+                                    "",
+                                    attributes={"usesEmulator": "False"},
+                                    indent=4,
+                                ),
+                                xml("Region", "", indent=4),
+                                xml("Variables", None, self_closing=True, indent=4),
+                            ]
+                        ),
+                        indent=2,
+                    ),
+                    xml("Offset", "00:00:00", indent=2, oneline=True),
+                    xml("AttemptCount", "0", indent=2, oneline=True),
+                    xml("AttemptHistory", None, indent=2, self_closing=True),
+                    xml("Segments", getallsegments(splits), indent=2),
+                    xml(
+                        "AutoSplitterSettings",
+                        "\n".join(
+                            [
+                                xml("Ordered", "True", oneline=True),
+                                xml("AutosplitEndRuns", "False", oneline=True),
+                                xml("Splits", getsplitnames(splits)),
+                            ]
+                        ),
+                    ),
+                ]
+            ),
+        )
     )
-    addallsplits(splitfile, splits)
-    splitfile.write("\n</Segments>")
-    splitfile.write("\n<AutoSplitterSettings>")
-    splitfile.write("\n<Ordered>True</Ordered>")
-    splitfile.write("\n<AutosplitEndRuns>False</AutosplitEndRuns>")
-    splitfile.write("\n<Splits>")
-    addsplitnames(splitfile, splits)
-    splitfile.write("\n</Splits>")
-    splitfile.write("\n</AutoSplitterSettings>")
-    splitfile.write("\n</Run>")
 
 
 makeLSS(percents)
