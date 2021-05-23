@@ -1,7 +1,13 @@
 import random
+import sys
 
-seed = random.randint(0, 1000000)
+if len(sys.argv) > 1:
+    seed = int(sys.argv[-1])
+else:
+    seed = random.randint(0, 1000000)
+
 random.seed(seed)
+
 global doesntunlock, percents
 percents = [
     "mawlek",
