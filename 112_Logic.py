@@ -191,13 +191,13 @@ def whatcanadd(
         if "p4" in nonlogic and pantheoncheck(totalobtained, 4):
             toadd.append("p4")
     if "mawlek" == justobtained:
-        variables[0] += 1
+        variables["mask shards"] += 1
     if all_in(["false knight", "claw", "dream nail"], totalobtained) and (
         "false knight" == justobtained
         or "claw" == justobtained
         or "dream nail" == justobtained
     ):
-        variables[3] += 300
+        variables["essence"] += 300
     if "gruz" == justobtained:
         toadd.extend(
             [
@@ -212,11 +212,11 @@ def whatcanadd(
         )
         toadd.extend(["dream nail"])
         if "claw" not in totalobtained:
-            variables[0] += 2
+            variables["mask shards"] += 2
     if "uumuu" == justobtained:
         toadd.append("monomon")
     if "nosk" == justobtained:
-        variables[2] += 1
+        variables["pale ore"] += 1
     if "traitor lord" in totalobtained and "kingsoul" in nonlogic:
         if all_in(["claw", "wings", "c-dash", "woke nail"], totalobtained) and (
             "vs" in totalobtained or "mothwing" in totalobtained
@@ -229,7 +229,7 @@ def whatcanadd(
         and "dream nail" in totalobtained
         and ("dream nail" == justobtained or "broken vessel" == justobtained)
     ):
-        variables[3] += 400
+        variables["essence"] += 400
     if "watcher knights" == justobtained:
         toadd.append("lurien")
     if "dung defender" == justobtained:
@@ -245,7 +245,7 @@ def whatcanadd(
         or "lurien" == justobtained
         or "monomon" == justobtained
     ):
-        variables[3] += 300
+        variables["essence"] += 300
     if "soul master" == justobtained:
         toadd.append("dive")
     if (
@@ -253,7 +253,7 @@ def whatcanadd(
         and "dive" in totalobtained
         and ("dream nail" == justobtained or "dive" == justobtained)
     ):
-        variables[3] += 300
+        variables["essence"] += 300
     if "mantis lords" == justobtained:
         toadd.append("MoP")
     if "hornet 1" == justobtained:
@@ -266,11 +266,11 @@ def whatcanadd(
     if "longnail" == justobtained:
         if "hornet 1" in nonlogic:
             toadd.extend(["hornet 1", "wraiths"])
-            variables[0] += 1
+            variables["mask shards"] += 1
     if "colo1" == justobtained:
         toadd.append("colo2")
     if "colo2" == justobtained:
-        variables[2] += 1
+        variables["pale ore"] += 1
         toadd.append("colo3")
     if "great slash" in nonlogic:
         if "wings" in totalobtained and "c-dash" in totalobtained:
@@ -294,25 +294,25 @@ def whatcanadd(
     ):
         toadd.append("NMG")
     if "galien" == justobtained:
-        variables[3] += 200
+        variables["essence"] += 200
     if "marmu" == justobtained:
-        variables[3] += 150
+        variables["essence"] += 150
     if "markoth" == justobtained:
-        variables[3] += 250
+        variables["essence"] += 250
     if "xero" == justobtained:
-        variables[3] += 100
+        variables["essence"] += 100
     if "no eyes" == justobtained:
-        variables[3] += 200
+        variables["essence"] += 200
     if "elder hu" == justobtained:
-        variables[3] += 100
+        variables["essence"] += 100
     if "gorb" == justobtained:
-        variables[3] += 100
+        variables["essence"] += 100
     if "grimmchild" == justobtained:
         toadd.append("grimm")
     if "dreamshield" == justobtained:
         if "hornet 1" in nonlogic:
             toadd.append("hornet 1")
-            variables[0] += 1
+            variables["mask shards"] += 1
     if "grimm" == justobtained:
         toadd.append("nkg")
     if "hive knight" == justobtained:
@@ -341,7 +341,7 @@ def whatcanadd(
         if "claw" in nonlogic:
             toadd.extend(["claw", "hornet 1"])
         if "hornet 1" in nonlogic:
-            variables[0] += 1
+            variables["mask shards"] += 1
     if "dream nail" in totalobtained:
         if "dreamshield" in nonlogic:
             toadd.append("dreamshield")
@@ -395,11 +395,11 @@ def whatcanadd(
                 ]
             )
             if "gruz" in totalobtained:
-                variables[0] += 2
+                variables["mask shards"] += 2
             else:
-                variables[0] += 4  # sly
-            variables[0] += 4  # grub,bretta,hive,waterways
-            variables[2] += 2
+                variables["mask shards"] += 4  # sly
+            variables["mask shards"] += 4  # grub,bretta,hive,waterways
+            variables["pale ore"] += 2
         if "vs" in totalobtained and "shade soul" in nonlogic:
             toadd.append("shade soul")
         if "dream nail" in totalobtained and "grimmchild" in nonlogic:
@@ -409,18 +409,18 @@ def whatcanadd(
         ) and "uumuu" in nonlogic:
             toadd.extend(["uumuu", "collector"])
         if "mothwing" in justobtained:
-            variables[0] += 1
+            variables["mask shards"] += 1
         if "mothwing" in totalobtained and "nosk" in nonlogic:
             toadd.extend(["nosk"])
     if "wings" == justobtained:
-        variables[0] += 2  # cg2, fungal core
-    if variables[2] >= 1 and "nail2" in nonlogic and "nail1" in totalobtained:
+        variables["mask shards"] += 2  # cg2, fungal core
+    if variables["pale ore"] >= 1 and "nail2" in nonlogic and "nail1" in totalobtained:
         toadd.append("nail2")
-    if variables[2] >= 3 and "nail3" in nonlogic and "nail2" in totalobtained:
+    if variables["pale ore"] >= 3 and "nail3" in nonlogic and "nail2" in totalobtained:
         toadd.append("nail3")
     if (
         all_in(["nosk", "nail3", "colo2", "wings"], totalobtained)
-        and variables[3] >= 300
+        and variables["essence"] >= 300
         and "nail4" in nonlogic
     ):
         toadd.append("nail4")
@@ -435,24 +435,28 @@ def whatcanadd(
     elif "6vf" in nonlogic:
         toadd.append("6vf")
     elif "9vf" in nonlogic:
-        if variables[3] >= 700 and "dream nail" in totalobtained:
+        if variables["essence"] >= 700 and "dream nail" in totalobtained:
             toadd.append("9vf")
-    if variables[3] >= 500 and "dream wielder" in nonlogic:
+    if variables["essence"] >= 500 and "dream wielder" in nonlogic:
         toadd.append("dream wielder")
     if (
-        variables[3] >= 1800
+        variables["essence"] >= 1800
         and "woke nail" in nonlogic
         and "dream wielder" in totalobtained
     ):
         toadd.append("woke nail")
-        variables[0] += 1  # 1500 reward, lazy
-    if variables[3] >= 2390 and "ascend" in nonlogic and "woke nail" in totalobtained:
+        variables["mask shards"] += 1  # 1500 reward, lazy
+    if (
+        variables["essence"] >= 2390
+        and "ascend" in nonlogic
+        and "woke nail" in totalobtained
+    ):
         toadd.append("ascend")
-    if "4ms" in nonlogic and variables[0] >= 4:
+    if "4ms" in nonlogic and variables["mask shards"] >= 4:
         toadd.append("4ms")
-    elif "8ms" in nonlogic and variables[0] >= 8:
+    elif "8ms" in nonlogic and variables["mask shards"] >= 8:
         toadd.append("8ms")
-    elif "12ms" in nonlogic and variables[0] >= 12:
+    elif "12ms" in nonlogic and variables["mask shards"] >= 12:
         toadd.append("12ms")
     if fullmovement(totalobtained):
         if (
@@ -460,7 +464,7 @@ def whatcanadd(
             and "12ms" not in nonlogic
             and "mawlek" in totalobtained
             and "dive" in totalobtained
-            and variables[3] >= 1500
+            and variables["essence"] >= 1500
         ):
             toadd.append("16ms")
         if "collector" in totalobtained and "elegy" in nonlogic:
@@ -469,7 +473,12 @@ def whatcanadd(
 
 
 def main(percents):
-    variables = [1, 0, 0, 0]  # Mask Shards, Vessel Fragments, Pale Ore, Essence
+    variables = {
+        "mask shards": 1,
+        "vessel fragments": 0,  # unused
+        "pale ore": 0,
+        "essence": 0,
+    }
     percentsinlogic = [
         "mawlek",
         "gruz",
