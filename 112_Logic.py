@@ -889,65 +889,63 @@ def makeLSS(percents):
     splits = rando(percents)
     # print(splits)
     # print('Randomization Complete. Constructing Split File Now (seed '+str(seed)+')')
-    splitfile = open("1xxRandomizedSplits" + str(seed) + ".lss", "w")
-    splitfile.truncate(0)
-    splitfile.write(
-        '<?xml version="1.0" encoding="UTF-8"?>\n'
-        + xml(
-            "Run",
-            attributes={"version": "1.7.0"},
-            content="\n".join(
-                [
-                    xml("GameIcon", None, indent=2, self_closing=True),
-                    xml("GameName", "Hollow Knight", indent=2, oneline=True),
-                    xml(
-                        "CategoryName",
-                        "112% - but random split order!!!",
-                        indent=2,
-                        oneline=True,
+    result = '<?xml version="1.0" encoding="UTF-8"?>\n' + xml(
+        "Run",
+        attributes={"version": "1.7.0"},
+        content="\n".join(
+            [
+                xml("GameIcon", None, indent=2, self_closing=True),
+                xml("GameName", "Hollow Knight", indent=2, oneline=True),
+                xml(
+                    "CategoryName",
+                    "112% - but random split order!!!",
+                    indent=2,
+                    oneline=True,
+                ),
+                "",
+                xml(
+                    "Metadata",
+                    "\n".join(
+                        [
+                            xml(
+                                "Run",
+                                None,
+                                attributes={"id": ""},
+                                self_closing=True,
+                                indent=4,
+                            ),
+                            xml(
+                                "Platform",
+                                "",
+                                attributes={"usesEmulator": "False"},
+                                indent=4,
+                            ),
+                            xml("Region", "", indent=4),
+                            xml("Variables", None, self_closing=True, indent=4),
+                        ]
                     ),
-                    "",
-                    xml(
-                        "Metadata",
-                        "\n".join(
-                            [
-                                xml(
-                                    "Run",
-                                    None,
-                                    attributes={"id": ""},
-                                    self_closing=True,
-                                    indent=4,
-                                ),
-                                xml(
-                                    "Platform",
-                                    "",
-                                    attributes={"usesEmulator": "False"},
-                                    indent=4,
-                                ),
-                                xml("Region", "", indent=4),
-                                xml("Variables", None, self_closing=True, indent=4),
-                            ]
-                        ),
-                        indent=2,
+                    indent=2,
+                ),
+                xml("Offset", "00:00:00", indent=2, oneline=True),
+                xml("AttemptCount", "0", indent=2, oneline=True),
+                xml("AttemptHistory", None, indent=2, self_closing=True),
+                xml("Segments", getallsegments(splits), indent=2),
+                xml(
+                    "AutoSplitterSettings",
+                    "\n".join(
+                        [
+                            xml("Ordered", "True", oneline=True),
+                            xml("AutosplitEndRuns", "False", oneline=True),
+                            xml("Splits", getsplitnames(splits)),
+                        ]
                     ),
-                    xml("Offset", "00:00:00", indent=2, oneline=True),
-                    xml("AttemptCount", "0", indent=2, oneline=True),
-                    xml("AttemptHistory", None, indent=2, self_closing=True),
-                    xml("Segments", getallsegments(splits), indent=2),
-                    xml(
-                        "AutoSplitterSettings",
-                        "\n".join(
-                            [
-                                xml("Ordered", "True", oneline=True),
-                                xml("AutosplitEndRuns", "False", oneline=True),
-                                xml("Splits", getsplitnames(splits)),
-                            ]
-                        ),
-                    ),
-                ]
-            ),
-        )
+                ),
+            ]
+        ),
     )
+
+    with open("1xxRandomizedSplits" + str(seed) + ".lss", "w") as splitfile:
+        splitfile.write(result)
 
 
 makeLSS(percents)
