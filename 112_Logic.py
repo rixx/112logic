@@ -117,19 +117,18 @@ percents = [
 ]
 
 
+def all_in(required, l):
+    return all(r in l for r in required)
+
+
 def fullmovement(obtained):
-    return (
-        "claw" in obtained
-        and "wings" in obtained
-        and "mothwing" in obtained
-        and "c-dash" in obtained
-    )
+    return all_in(["claw", "wings", "mothwing", "c-dash"], obtained)
 
 
-def pantheoncheck(obtained, whatquery):
+def pantheoncheck(obtained, pantheon):
     if "dive" not in obtained:
         return False
-    if whatquery == 1:
+    if pantheon == 1:
         if (
             "gruz" in obtained
             and "false knight" in obtained
@@ -140,47 +139,42 @@ def pantheoncheck(obtained, whatquery):
         ):
             return True
         return False
-    if whatquery == 2:
-        if (
-            "xero" in obtained
-            and "colo2" in obtained
-            and "mantis lords" in obtained
-            and "marmu" in obtained
-            and "flukenest" in obtained
-            and "nosk" in obtained
-            and "broken vessel" in obtained
-        ):
-            return True
-        return False
-    if whatquery == 3:
-        if (
-            "hive knight" in obtained
-            and "elder hu" in obtained
-            and "collector" in obtained
-            and "grimm" in obtained
-            and "galien" in obtained
-            and "uumuu" in obtained
-            and "hornet 2" in obtained
-        ):
-            return True
-        return False
-    if whatquery == 4:
-        if (
-            "p1" in obtained
-            and "p2" in obtained
-            and "p3" in obtained
-            and "wings" in obtained
-            and "broken vessel" in obtained
-            and "no eyes" in obtained
-            and "traitor lord" in obtained
-            and "dung defender" in obtained
-            and "false knight" in obtained
-            and "markoth" in obtained
-            and "watcher knights" in obtained
-            and "soul master" in obtained
-        ):
-            return True
-        return False
+
+    requirements = {
+        2: [
+            "xero",
+            "colo2",
+            "mantis lords",
+            "marmu",
+            "flukenest",
+            "nosk",
+            "broken vessel",
+        ],
+        3: [
+            "hive knight",
+            "elder hu",
+            "collector",
+            "grimm",
+            "galien",
+            "uumuu",
+            "hornet 2",
+        ],
+        4: [
+            "p1",
+            "p2",
+            "p3",
+            "wings",
+            "broken vessel",
+            "no eyes",
+            "traitor lord",
+            "dung defender",
+            "false knight",
+            "markoth",
+            "watcher knights",
+            "soul master",
+        ],
+    }
+    return all_in(requirements[pantheon], obtained)
 
 
 def whatcanadd(
@@ -198,15 +192,10 @@ def whatcanadd(
             toadd.append("p4")
     if "mawlek" == justobtained:
         variables[0] += 1
-    if (
-        "false knight" in totalobtained
-        and "claw" in totalobtained
-        and "dream nail" in totalobtained
-        and (
-            "false knight" == justobtained
-            or "claw" == justobtained
-            or "dream nail" == justobtained
-        )
+    if all_in(["false knight", "claw", "dream nail"], totalobtained) and (
+        "false knight" == justobtained
+        or "claw" == justobtained
+        or "dream nail" == justobtained
     ):
         variables[3] += 300
     if "gruz" == justobtained:
@@ -229,12 +218,8 @@ def whatcanadd(
     if "nosk" == justobtained:
         variables[2] += 1
     if "traitor lord" in totalobtained and "kingsoul" in nonlogic:
-        if (
-            "claw" in totalobtained
-            and "wings" in totalobtained
-            and "c-dash" in totalobtained
-            and "woke nail" in totalobtained
-            and ("vs" in totalobtained or "mothwing" in totalobtained)
+        if all_in(["claw", "wings", "c-dash", "woke nail"], totalobtained) and (
+            "vs" in totalobtained or "mothwing" in totalobtained
         ):
             toadd.append("kingsoul")
     if "broken vessel" == justobtained:
@@ -249,21 +234,16 @@ def whatcanadd(
         toadd.append("lurien")
     if "dung defender" == justobtained:
         toadd.append("defender's crest")
-    if (
-        "dive" in totalobtained
-        and "dung defender" in totalobtained
-        and "dream nail" in totalobtained
-        and (
-            "dive" == justobtained
-            or "dung defender" == justobtained
-            or "dream nail" == justobtained
-            or "herrah" == justobtained
-            or "lurien" == justobtained
-            or "monomon" == justobtained
-        )
-        and "herrah" in totalobtained
-        and "lurien" in totalobtained
-        and "monomon" in totalobtained
+    if all_in(
+        ["dive", "dung defender", "dream nail", "herrah", "lurien", "monomon"],
+        totalobtained,
+    ) and (
+        "dive" == justobtained
+        or "dung defender" == justobtained
+        or "dream nail" == justobtained
+        or "herrah" == justobtained
+        or "lurien" == justobtained
+        or "monomon" == justobtained
     ):
         variables[3] += 300
     if "soul master" == justobtained:
@@ -309,11 +289,8 @@ def whatcanadd(
             toadd.append("shriek")
         toadd.append("lifeblood core")
         toadd.append("shade cloak")
-    if (
-        "NMG" in nonlogic
-        and "great slash" in totalobtained
-        and "dash slash" in totalobtained
-        and "cyclone slash" in totalobtained
+    if "NMG" in nonlogic and all_in(
+        ["great slash", "dash slash", "cyclone slash"], totalobtained
     ):
         toadd.append("NMG")
     if "galien" == justobtained:
@@ -442,10 +419,7 @@ def whatcanadd(
     if variables[2] >= 3 and "nail3" in nonlogic and "nail2" in totalobtained:
         toadd.append("nail3")
     if (
-        "nosk" in totalobtained
-        and "nail3" in totalobtained
-        and "colo2" in totalobtained
-        and "wings" in totalobtained
+        all_in(["nosk", "nail3", "colo2", "wings"], totalobtained)
         and variables[3] >= 300
         and "nail4" in nonlogic
     ):
