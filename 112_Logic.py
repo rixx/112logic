@@ -289,7 +289,7 @@ def whatcanadd(justobtained, totalobtained, nonlogic, variables):
     # Most mask shard updates
     if "mawlek" == justobtained:
         variables["mask shards"] += 1
-    if "gruz" == justobtained and "claw" not in totalobtained:  # TODO logic??
+    if "gruz" == justobtained and "claw" not in totalobtained:  # sly mask shards
         variables["mask shards"] += 2
     if "longnail" == justobtained and "hornet 1" in nonlogic:
         toadd.extend(["hornet 1", "wraiths"])
