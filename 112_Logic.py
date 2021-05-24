@@ -121,6 +121,10 @@ def all_in(required, l):
     return all(r in l for r in required)
 
 
+def any_new_all_present(items, new, total):
+    return all_in(items, total) and any(i == new for i in items)
+
+
 def fullmovement(obtained):
     return all_in(["claw", "wings", "mothwing", "c-dash"], obtained)
 
@@ -177,101 +181,140 @@ def pantheoncheck(obtained, pantheon):
     return all_in(requirements[pantheon], obtained)
 
 
-def whatcanadd(
-    justobtained, totalobtained, nonlogic, variables
-):  # variables: Mask Shards, Vessel Fragments, Pale Ore, Essence, idk if grubs
+def whatcanadd(justobtained, totalobtained, nonlogic, variables):
     toadd = []
-    if "nail4" in totalobtained:
-        if "p1" in nonlogic and pantheoncheck(totalobtained, 1):
-            toadd.append("p1")
-        if "p2" in nonlogic and pantheoncheck(totalobtained, 2):
-            toadd.append("p2")
-        if "p3" in nonlogic and pantheoncheck(totalobtained, 3):
-            toadd.append("p3")
-        if "p4" in nonlogic and pantheoncheck(totalobtained, 4):
-            toadd.append("p4")
+    # First, update simple logic steps
+    add_mapping = {
+        "gruz": [
+            "gathering swarm",
+            "stalwart shell",
+            "lifeblood heart",
+            "longnail",
+            "steady body",
+            "shaman stone",
+            "quick focus",
+            "dream nail",
+        ],
+        "uumuu": ["monomon"],
+        "broken vessel": ["wings"],
+        "watcher knights": ["lurien"],
+        "dung defender": ["defender's crest"],
+        "soul master": ["dive"],
+        "mantis lords": ["MoP"],
+        "hornet 1": ["mothwing"],
+        "hornet 2": ["brand"],
+        "colo1": ["colo2"],
+        "colo2": ["colo3"],
+        "grimmchild": ["grimm"],
+        "grimm": ["nkg"],
+        "hive knight": ["hiveblood"],
+        "ismas": ["shape of unn"],
+        "c-dash": [
+            "glowing womb",
+            "broken vessel",
+            "deep focus",
+            "ismas",
+            "thorns of agony",
+            "spore shroom",
+        ],
+        "claw": [
+            "cyclone slash",
+            "dash slash",
+            "c-dash",
+            "dream nail",
+            "wraiths",
+            "vs",
+            "soul master",
+            "compass",
+            "gathering swarm",
+            "stalwart shell",
+            "soul catcher",
+            "shaman stone",
+            "dashmaster",
+            "thorns of agony",
+            "fury of the fallen",
+            "heart",
+            "greed",
+            "strength",
+            "steady body",
+            "heavy blow",
+            "longnail",
+            "baldur shell",
+            "lifeblood heart",
+            "joni's blessing",
+            "grubsong",
+            "herrah",
+            "watcher knights",
+            "dung defender",
+            "mantis lords",
+            "c-dash",
+            "nail1",
+            "hornet 2",
+            "colo1",
+            "hive knight",
+            "sprintmaster",
+            "twister",
+            "weaversong",
+        ],
+        "brand": ["lifeblood core", "shade cloak"],
+        "dive": ["d-dark", "soul eater", "quick slash", "tuner"],
+    }
+    if justobtained in add_mapping:
+        toadd.extend(add_mapping[justobtained])
+
+    # Simple essence updates
+    essence = {
+        "galien": 200,
+        "marmu": 150,
+        "markoth": 250,
+        "xero": 100,
+        "no eyes": 200,
+        "elder hu": 100,
+        "gorb": 100,
+    }
+    if justobtained in essence:
+        variables["essence"] += essence[justobtained]
+
+    # Complex essence updates
+    essence = [
+        (["false knight", "claw", "dream nail"], 300),
+        (["broken vessel", "dream nail"], 400),
+        (["dive", "dung defender", "dream nail", "herrah", "lurien", "monomon"], 300),
+        (["dream nail", "dive"], 300),
+    ]
+    for items, count in essence:
+        if any_new_all_present(items, justobtained, totalobtained):
+            variables["essence"] += count
+
+    # Most mask shard updates
     if "mawlek" == justobtained:
         variables["mask shards"] += 1
-    if all_in(["false knight", "claw", "dream nail"], totalobtained) and (
-        "false knight" == justobtained
-        or "claw" == justobtained
-        or "dream nail" == justobtained
-    ):
-        variables["essence"] += 300
-    if "gruz" == justobtained:
-        toadd.extend(
-            [
-                "gathering swarm",
-                "stalwart shell",
-                "lifeblood heart",
-                "longnail",
-                "steady body",
-                "shaman stone",
-                "quick focus",
-            ]
-        )
-        toadd.extend(["dream nail"])
-        if "claw" not in totalobtained:
-            variables["mask shards"] += 2
-    if "uumuu" == justobtained:
-        toadd.append("monomon")
+    if "gruz" == justobtained and "claw" not in totalobtained:  # TODO logic??
+        variables["mask shards"] += 2
+    if "longnail" == justobtained and "hornet 1" in nonlogic:
+        toadd.extend(["hornet 1", "wraiths"])
+        variables["mask shards"] += 1
+    if "dreamshield" == justobtained and "hornet 1" in nonlogic:
+        toadd.append("hornet 1")
+        variables["mask shards"] += 1
+    if "wings" == justobtained:
+        variables["mask shards"] += 2  # cg2, fungal core
     if "nosk" == justobtained:
         variables["pale ore"] += 1
+
     if "traitor lord" in totalobtained and "kingsoul" in nonlogic:
         if all_in(["claw", "wings", "c-dash", "woke nail"], totalobtained) and (
             "vs" in totalobtained or "mothwing" in totalobtained
         ):
             toadd.append("kingsoul")
-    if "broken vessel" == justobtained:
-        toadd.append("wings")
     if (
-        "broken vessel" in totalobtained
-        and "dream nail" in totalobtained
-        and ("dream nail" == justobtained or "broken vessel" == justobtained)
+        "dashmaster" == justobtained
+        and "mothwing" in totalobtained
+        and "claw" in totalobtained
     ):
-        variables["essence"] += 400
-    if "watcher knights" == justobtained:
-        toadd.append("lurien")
-    if "dung defender" == justobtained:
-        toadd.append("defender's crest")
-    if all_in(
-        ["dive", "dung defender", "dream nail", "herrah", "lurien", "monomon"],
-        totalobtained,
-    ) and (
-        "dive" == justobtained
-        or "dung defender" == justobtained
-        or "dream nail" == justobtained
-        or "herrah" == justobtained
-        or "lurien" == justobtained
-        or "monomon" == justobtained
-    ):
-        variables["essence"] += 300
-    if "soul master" == justobtained:
-        toadd.append("dive")
-    if (
-        "dream nail" in totalobtained
-        and "dive" in totalobtained
-        and ("dream nail" == justobtained or "dive" == justobtained)
-    ):
-        variables["essence"] += 300
-    if "mantis lords" == justobtained:
-        toadd.append("MoP")
-    if "hornet 1" == justobtained:
-        toadd.append("mothwing")
-    if "hornet 2" == justobtained:
-        toadd.append("brand")
-    if "dashmaster" == justobtained:
-        if "mothwing" in totalobtained and "claw" in totalobtained:
-            toadd.append("glowing womb")
-    if "longnail" == justobtained:
-        if "hornet 1" in nonlogic:
-            toadd.extend(["hornet 1", "wraiths"])
-            variables["mask shards"] += 1
-    if "colo1" == justobtained:
-        toadd.append("colo2")
+        toadd.append("glowing womb")
     if "colo2" == justobtained:
         variables["pale ore"] += 1
-        toadd.append("colo3")
     if "great slash" in nonlogic:
         if "wings" in totalobtained and "c-dash" in totalobtained:
             toadd.append("great slash")
@@ -281,62 +324,18 @@ def whatcanadd(
             or "c-dash" in totalobtained
         ):
             toadd.append("great slash")
-    if "flukenest" in nonlogic:
-        if "dive" in totalobtained:
-            toadd.append("flukenest")
-    if "brand" == justobtained:
-        if "wraiths" in totalobtained:
-            toadd.append("shriek")
-        toadd.append("lifeblood core")
-        toadd.append("shade cloak")
+    if "flukenest" in nonlogic and "dive" in totalobtained:
+        toadd.append("flukenest")
+    if "brand" == justobtained and "wraiths" in totalobtained:
+        toadd.append("shriek")
     if "NMG" in nonlogic and all_in(
         ["great slash", "dash slash", "cyclone slash"], totalobtained
     ):
         toadd.append("NMG")
-    if "galien" == justobtained:
-        variables["essence"] += 200
-    if "marmu" == justobtained:
-        variables["essence"] += 150
-    if "markoth" == justobtained:
-        variables["essence"] += 250
-    if "xero" == justobtained:
-        variables["essence"] += 100
-    if "no eyes" == justobtained:
-        variables["essence"] += 200
-    if "elder hu" == justobtained:
-        variables["essence"] += 100
-    if "gorb" == justobtained:
-        variables["essence"] += 100
-    if "grimmchild" == justobtained:
-        toadd.append("grimm")
-    if "dreamshield" == justobtained:
-        if "hornet 1" in nonlogic:
-            toadd.append("hornet 1")
-            variables["mask shards"] += 1
-    if "grimm" == justobtained:
-        toadd.append("nkg")
-    if "hive knight" == justobtained:
-        toadd.append("hiveblood")
-    if "c-dash" == justobtained:
-        toadd.extend(
-            [
-                "glowing womb",
-                "broken vessel",
-                "deep focus",
-                "ismas",
-                "thorns of agony",
-                "spore shroom",
-            ]
-        )
-        if "wings" in totalobtained:
-            toadd.extend("great slash")
-    if "dive" == justobtained:
-        toadd.extend(["d-dark", "soul eater", "quick slash", "tuner"])
-    if "wraiths" == justobtained:
-        if "brand" in totalobtained:
-            toadd.append("shriek")
-    if "ismas" == justobtained:
-        toadd.append("shape of unn")
+    if "c-dash" == justobtained and "wings" in totalobtained:
+        toadd.extend("great slash")
+    if "wraiths" == justobtained and "brand" in totalobtained:
+        toadd.append("shriek")
     if "vs" == justobtained:
         if "claw" in nonlogic:
             toadd.extend(["claw", "hornet 1"])
@@ -353,47 +352,6 @@ def whatcanadd(
             toadd.extend(["galien", "gorb", "marmu"])
     if "claw" in totalobtained or "claw" == justobtained:  # Whole map open now lol
         if "claw" == justobtained:
-            toadd.extend(
-                [
-                    "cyclone slash",
-                    "dash slash",
-                    "c-dash",
-                    "dream nail",
-                    "wraiths",
-                    "vs",
-                    "soul master",
-                    "compass",
-                    "gathering swarm",
-                    "stalwart shell",
-                    "soul catcher",
-                    "shaman stone",
-                    "dashmaster",
-                    "thorns of agony",
-                    "fury of the fallen",
-                    "heart",
-                    "greed",
-                    "strength",
-                    "steady body",
-                    "heavy blow",
-                    "longnail",
-                    "baldur shell",
-                    "lifeblood heart",
-                    "joni's blessing",
-                    "grubsong",
-                    "herrah",
-                    "watcher knights",
-                    "dung defender",
-                    "mantis lords",
-                    "c-dash",
-                    "nail1",
-                    "hornet 2",
-                    "colo1",
-                    "hive knight",
-                    "sprintmaster",
-                    "twister",
-                    "weaversong",
-                ]
-            )
             if "gruz" in totalobtained:
                 variables["mask shards"] += 2
             else:
@@ -412,8 +370,7 @@ def whatcanadd(
             variables["mask shards"] += 1
         if "mothwing" in totalobtained and "nosk" in nonlogic:
             toadd.extend(["nosk"])
-    if "wings" == justobtained:
-        variables["mask shards"] += 2  # cg2, fungal core
+    # Nail upgrades
     if variables["pale ore"] >= 1 and "nail2" in nonlogic and "nail1" in totalobtained:
         toadd.append("nail2")
     if variables["pale ore"] >= 3 and "nail3" in nonlogic and "nail2" in totalobtained:
@@ -458,6 +415,10 @@ def whatcanadd(
         toadd.append("8ms")
     elif "12ms" in nonlogic and variables["mask shards"] >= 12:
         toadd.append("12ms")
+    if "nail4" in totalobtained:
+        for i in range(1, 5):
+            if "p{i}".format(i=i) in nonlogic and pantheoncheck(totalobtained, i):
+                toadd.append("p{i}".format(i=i))
     if fullmovement(totalobtained):
         if (
             "16ms" in nonlogic
